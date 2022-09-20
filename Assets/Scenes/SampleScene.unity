@@ -493,9 +493,10 @@ MonoBehaviour:
   - {fileID: 1007225145}
   _player: {fileID: 161587490}
   _playerSpeed: 5
-  _gateOpeningTime: 0
+  _gateOpeningTime: 5
   _playerAnimator: {fileID: 161587491}
-  _openedGateOffset: {x: 0, y: 0, z: 0}
+  _openedGateOffset: {x: 0, y: -5, z: 0}
+  _pressedButtonOffset: 0
 --- !u!114 &1406009502
 MonoBehaviour:
   m_ObjectHideFlags: 0

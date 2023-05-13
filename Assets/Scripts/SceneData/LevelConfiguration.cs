@@ -10,7 +10,6 @@ namespace SceneData
         [SerializeField] private float _gateOpeningTime;
         [SerializeField] private Animator _playerAnimator;
         [SerializeField] private Vector3 _openedGateOffset;
-        [SerializeField] private float _pressedButtonOffset;
 
         public GateObject[] Gates => _gates;
         public Transform Player => _player;

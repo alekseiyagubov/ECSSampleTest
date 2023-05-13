@@ -1,7 +1,6 @@
 ﻿using Components;
 using Components.Core;
 using Leopotam.EcsLite;
-using UnityEngine;
 
 namespace Systems
 {
@@ -11,7 +10,7 @@ namespace Systems
         private EcsPool<PlayerPosition> _positionPool;
         private EcsFilter _playerTransformFilter;
         private EcsPool<PlayerTransform> _transformPool;
-        
+
 
         public void Init(IEcsSystems systems)
         {
@@ -20,30 +19,35 @@ namespace Systems
             _positionPool = _world.GetPool<PlayerPosition>();
             _transformPool = _world.GetPool<PlayerTransform>();
         }
-        
+
         public void Run(IEcsSystems systems)
         {
             foreach (var playerEntity in _playerTransformFilter)
             {
-                ref var positionComponent = ref _positionPool.Get(playerEntity);
-                ref var playerTransform = ref _transformPool.Get(playerEntity);
-
-                var targetPosition = positionComponent.Position;
-                if (targetPosition == default)
-                {
-                    continue;
-                }
-
-                var playerTransformPosition = playerTransform.Transform.position;
-
-                var direction = targetPosition - playerTransformPosition;
-                if (direction != default)
-                {
-                    playerTransform.Transform.forward = direction;
-                }
-
-                playerTransform.Transform.position = targetPosition;
+                UpdatePlayerTransform(playerEntity);
             }
+        }
+
+        private void UpdatePlayerTransform(int playerEntity)
+        {
+            ref var positionComponent = ref _positionPool.Get(playerEntity);
+            ref var playerTransform = ref _transformPool.Get(playerEntity);
+
+            var targetPosition = positionComponent.Position;
+            if (targetPosition == default)
+            {
+                return;
+            }
+
+            var playerTransformPosition = playerTransform.Transform.position;
+
+            var direction = targetPosition - playerTransformPosition;
+            if (direction != default)
+            {
+                playerTransform.Transform.forward = direction;
+            }
+
+            playerTransform.Transform.position = targetPosition;
         }
     }
 }

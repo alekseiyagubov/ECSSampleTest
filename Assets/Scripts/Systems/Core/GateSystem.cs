@@ -38,13 +38,18 @@ namespace Systems.Core
 
                 foreach (var gateEntity in _gateFilter)
                 {
-                    ref var gateComponent = ref _gatesPool.Get(gateEntity);
-                    var isPlayerOnButton = CheckPlayerOnButton(playerPositionComponent.Position, gateComponent.ButtonPosition);
-                    if (isPlayerOnButton)
-                    {
-                        gateComponent.OpeningProgress += _timeUpdater.DeltaTime / _gateOpeningTime;
-                    }
+                    UpdateGateState(playerPositionComponent.Position, gateEntity);
                 }
+            }
+        }
+
+        private void UpdateGateState(Vector3 playerPosition, int gateEntity)
+        {
+            ref var gateComponent = ref _gatesPool.Get(gateEntity);
+            var isPlayerOnButton = CheckPlayerOnButton(playerPosition, gateComponent.ButtonPosition);
+            if (isPlayerOnButton)
+            {
+                gateComponent.OpeningProgress += _timeUpdater.DeltaTime / _gateOpeningTime;
             }
         }
 

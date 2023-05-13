@@ -8,7 +8,7 @@ namespace Systems
     public class PlayerAnimationSystem : IEcsRunSystem, IEcsInitSystem
     {
         private static readonly int AnimatorIsRunParameter = Animator.StringToHash("IsMoving");
-        
+
         private EcsFilter _animationFilter;
         private EcsPool<Animation> _animationPool;
         private EcsFilter _playerMovingFilter;
@@ -22,10 +22,15 @@ namespace Systems
             _playerMovingFilter = world.Filter<MovingFlag>().End();
             _movingFlagPool = world.GetPool<MovingFlag>();
 
+            InitAnimation(world);
+        }
+
+        private void InitAnimation(EcsWorld world)
+        {
             _animationFilter = world.Filter<Animation>().End();
             _animationPool = world.GetPool<Animation>();
         }
-        
+
         public void Run(IEcsSystems systems)
         {
             foreach (var entity in _playerMovingFilter)
@@ -35,14 +40,18 @@ namespace Systems
                 {
                     continue;
                 }
-                
+
                 _isMoving = movingComponent.IsMoving;
-                    
-                foreach (var animationEntity in _animationFilter)
-                {
-                    var animator = _animationPool.Get(animationEntity);
-                    animator.Animator.SetBool(AnimatorIsRunParameter, _isMoving);
-                }
+                UpdateAnimationEntities();
+            }
+        }
+
+        private void UpdateAnimationEntities()
+        {
+            foreach (var animationEntity in _animationFilter)
+            {
+                var animator = _animationPool.Get(animationEntity);
+                animator.Animator.SetBool(AnimatorIsRunParameter, _isMoving);
             }
         }
     }

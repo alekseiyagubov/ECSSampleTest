@@ -19,7 +19,7 @@ namespace Systems
             _world = systems.GetWorld();
             _gatesFilter = _world.Filter<Gate>().End();
             _gatesPool = _world.GetPool<Gate>();
-            
+
             _gatesTransformPool = _world.GetPool<GateTransform>();
 
             var sharedData = systems.GetShared<SharedData>();
@@ -30,14 +30,21 @@ namespace Systems
         {
             foreach (var gateEntity in _gatesFilter)
             {
-                ref var gateComponent = ref _gatesPool.Get(gateEntity);
-                ref var gateTransformComponent = ref _gatesTransformPool.Get(gateEntity);
-
-                var closedPosition = gateTransformComponent.ClosedPosition;
-                var openedPosition = closedPosition + _openedGateOffset;
-                var openingProgress = gateComponent.OpeningProgress;
-                gateTransformComponent.DoorTransform.position = Vector3.Lerp(closedPosition, openedPosition, openingProgress);
+                UpdateGatePosition(gateEntity);
             }
+        }
+
+        private void UpdateGatePosition(int gateEntity)
+        {
+            ref var gateComponent = ref _gatesPool.Get(gateEntity);
+            ref var gateTransformComponent = ref _gatesTransformPool.Get(gateEntity);
+
+            var closedPosition = gateTransformComponent.ClosedPosition;
+            var openedPosition = closedPosition + _openedGateOffset;
+            var openingProgress = gateComponent.OpeningProgress;
+
+            gateTransformComponent.DoorTransform.position =
+                Vector3.Lerp(closedPosition, openedPosition, openingProgress);
         }
     }
 }

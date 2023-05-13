@@ -10,7 +10,7 @@ namespace Core
     public sealed class EcsStartUp : MonoBehaviour, ITimeUpdater
     {
         [SerializeField] private LevelConfiguration _levelConfiguration;
-        
+
         private EcsWorld _world;
         private EcsSystems _systems;
 
@@ -23,18 +23,38 @@ namespace Core
 
         private void Initialize()
         {
-            var sharedData = new SharedData();
-            sharedData.Gates = _levelConfiguration.Gates;
-            sharedData.Player = _levelConfiguration.Player;
-            sharedData.TimeUpdater = this;
+            var sharedData = CreateSharedData();
+            InitializeSharedData(sharedData);
+            
+            _world = new EcsWorld();
+            CreateSystems(sharedData);
+            _systems.Init();
+        }
+
+        private SharedData CreateSharedData()
+        {
+            var sharedData = new SharedData
+            {
+                Gates = _levelConfiguration.Gates,
+                Player = _levelConfiguration.Player,
+                TimeUpdater = this
+            };
+
+            return sharedData;
+        }
+
+        private void InitializeSharedData(SharedData sharedData)
+        {
             sharedData.GameConfiguration.PlayerSpeed = _levelConfiguration.PlayerSpeed;
             sharedData.GameConfiguration.GateOpeningTime = _levelConfiguration.GateOpeningTime;
             sharedData.PlayerAnimator = _levelConfiguration.PlayerAnimator;
             sharedData.GameConfiguration.OpenedGateOffset = _levelConfiguration.OpenedGateOffset;
-            
-            _world = new EcsWorld();
+        }
+
+        private void CreateSystems(SharedData sharedData)
+        {
             _systems = new EcsSystems(_world, sharedData);
-            
+
             _systems.Add(new InputSystem());
             _systems.Add(new PlayerInitializeSystem());
             _systems.Add(new GatesInitializeSystem());
@@ -43,8 +63,6 @@ namespace Core
             _systems.Add(new PlayerTransformUpdateSystem());
             _systems.Add(new PlayerAnimationSystem());
             _systems.Add(new GateTransformUpdateSystem());
-            
-            _systems.Init();
         }
 
         private void Update()

@@ -1,4 +1,3 @@
-using Components;
 using Leopotam.EcsLite;
 using UnityEngine;
 using Input = Components.Input;
@@ -15,13 +14,13 @@ namespace Systems
         {
             _world = systems.GetWorld();
             var entity = _world.NewEntity();
-            
+
             _inputPool = _world.GetPool<Input>();
             _inputPool.Add(entity);
-            
+
             _inputFilter = _world.Filter<Input>().End();
         }
-        
+
         public void Run(IEcsSystems systems)
         {
             UpdateMousePressPosition();
@@ -29,29 +28,21 @@ namespace Systems
 
         private void UpdateMousePressPosition()
         {
-            if (UnityEngine.Input.GetMouseButtonDown(0))
+            if (!UnityEngine.Input.GetMouseButtonDown(0))
             {
-                var ray = Camera.main.ScreenPointToRay(UnityEngine.Input.mousePosition);
-
-                if (!Physics.Raycast(ray, out var hit))
-                {
-                    return;
-                }
-                
-                foreach (var entity in _inputFilter)
-                {
-                    ref var inputComponent = ref _inputPool.Get(entity);
-                    inputComponent.Position = hit.point;
-                    inputComponent.IsPressed = true;
-                }
-                
                 return;
             }
             
+            var ray = Camera.main.ScreenPointToRay(UnityEngine.Input.mousePosition);
+            if (!Physics.Raycast(ray, out var hit))
+            {
+                return;
+            }
+
             foreach (var entity in _inputFilter)
             {
-                ref var inputDataComponent = ref _inputPool.Get(entity);
-                inputDataComponent.IsPressed = false;
+                ref var inputComponent = ref _inputPool.Get(entity);
+                inputComponent.Position = hit.point;
             }
         }
     }
